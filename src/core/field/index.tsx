@@ -2,9 +2,9 @@ import * as React from 'react';
 import get from 'lodash.get';
 import Context from '../context';
 import { FieldProps } from '../../typings';
-const { useState, useEffect, useContext, useCallback } = React;
+const { memo, useState, useEffect, useContext, useCallback } = React;
 
-export default function IField(fieldProps: FieldProps) {
+const IField = memo((fieldProps: FieldProps) => {
   const contextAPI = useContext(Context);
   const { getWidget, getFieldsValue, getFieldsError, dispatch } = contextAPI;
   const { name, widget, CRule, IRule, ...rest } = fieldProps;
@@ -46,4 +46,5 @@ export default function IField(fieldProps: FieldProps) {
       </div>
     )
   );
-}
+});
+export default IField;

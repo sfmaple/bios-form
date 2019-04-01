@@ -4,9 +4,9 @@ import set from 'lodash.set';
 import { FieldSchema, BaseProps } from '../../typings';
 import Context from '../context';
 import IField from '../field';
-const { useContext } = React;
+const { memo, useContext } = React;
 
-export default function BaseForm(props: BaseProps) {
+const BaseForm = memo((props: BaseProps) => {
   const { formSchema, fieldsSchema = [] } = props;
   const contextAPI = useContext(Context);
   const { getFieldSchema } = contextAPI;
@@ -27,4 +27,5 @@ export default function BaseForm(props: BaseProps) {
     const isShow = !formSchema || index == null || formSchema.index === index;
     return isShow && <IField key={i} formSchema={i} {...nextFieldSchema} />;
   });
-}
+});
+export default BaseForm;
