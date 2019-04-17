@@ -1,14 +1,15 @@
 import { Context } from '../typings';
+import * as _widgets from '../widgets';
 
 export default class ContextModel {
-  private widgets = {};
+  private widgets = { ..._widgets };
   private constants = {};
   private functions = {};
   private fieldSchemas = {};
 
   constructor(context: Context) {
     const { widgets, constants, functions } = context;
-    this.widgets = widgets || {};
+    this.widgets = Object.assign(this.widgets, widgets || {});
     this.functions = functions || {};
     this.constants = constants || {};
   }
