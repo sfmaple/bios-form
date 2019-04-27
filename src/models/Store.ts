@@ -9,9 +9,9 @@ export default class StoreModel {
   private errors = {};
   // private formRules = {};
   // The rules used when the form checks field data
-  private fieldsCRule = {};
+  private fieldsCheckRule = {};
   // The rules used when the form enters field data
-  private fieldsERule = {};
+  private fieldsEnterRule = {};
   constructor(store: IStore) {
     const { initialData } = store;
     this.data = clone(initialData || {});
@@ -25,13 +25,13 @@ export default class StoreModel {
     return this.errors;
   }
   // Bean: GET Function
-  public getFieldsCRule = (names: string[]) => {
-    const { fieldsCRule } = this;
-    return names ? pick(fieldsCRule, names) : fieldsCRule;
+  public getFieldsCheckRule = (names: string[]) => {
+    const { fieldsCheckRule } = this;
+    return names ? pick(fieldsCheckRule, names) : fieldsCheckRule;
   };
-  public getFieldsERule = (names: string[]) => {
-    const { fieldsERule } = this;
-    return names ? pick(fieldsERule, names) : fieldsERule;
+  public getFieldsEnterRule = (names: string[]) => {
+    const { fieldsEnterRule } = this;
+    return names ? pick(fieldsEnterRule, names) : fieldsEnterRule;
   };
   public getFieldsError = (names: string[]) => {
     const { errors } = this;
@@ -48,17 +48,39 @@ export default class StoreModel {
       : data;
   };
   // Bean: SET Function
-  public setFieldCRule = (name: string, checkRule: CheckRule) => {
-    this.fieldsCRule[name] = checkRule;
+  public setFieldCheckRule = (name: string, checkRule: CheckRule) => {
+    const { fieldsCheckRule } = this;
+    if (fieldsCheckRule[name]) {
+      fieldsCheckRule[name].push(checkRule);
+    } else {
+      fieldsCheckRule[name] = [checkRule];
+    }
   };
-  public setFieldERule = (name: string, enterRule: EnterRule) => {
-    this.fieldsERule[name] = enterRule;
+  public cancelFieldCheckRule = (name: string, checkRule: CheckRule) => {
+    const { fieldsCheckRule } = this;
+    if (fieldsCheckRule[name]) {
+      fieldsCheckRule[name] = fieldsCheckRule[name].filter((rule: any) => rule !== checkRule);
+    }
+  };
+  public setFieldEnterRule = (name: string, enterRule: EnterRule) => {
+    const { fieldsEnterRule } = this;
+    if (fieldsEnterRule[name]) {
+      fieldsEnterRule[name].push(enterRule);
+    } else {
+      fieldsEnterRule[name] = [enterRule];
+    }
+  };
+  public cancelFieldEnterRule = (name: string, enterRule: EnterRule) => {
+    const { fieldsEnterRule } = this;
+    if (fieldsEnterRule[name]) {
+      fieldsEnterRule[name] = fieldsEnterRule[name].filter((rule: any) => rule !== enterRule);
+    }
   };
   public setFieldError = (name: string, error: Error) => {
     this.errors[name] = error;
   };
   public setFieldValue = (name: string, value: any) => {
     const { data } = this;
-    set(data, name, value);
+    name ? set(data, name, value) : Object.assign(data, value);
   };
 }

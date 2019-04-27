@@ -1,3 +1,4 @@
+import rimraf from 'rimraf';
 import ts from 'typescript';
 import tsPlugin from 'rollup-plugin-typescript';
 import replace from 'rollup-plugin-replace';
@@ -7,6 +8,11 @@ import sourceMaps from "rollup-plugin-sourcemaps";
 import {
   uglify
 } from 'rollup-plugin-uglify'
+
+rimraf('./dist', function (error) {
+  if (error) throw error;
+
+})
 
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development';
 const extensions = [".ts", ".tsx", ".js", ".jsx"]

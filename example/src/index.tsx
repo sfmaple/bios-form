@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import omit from 'lodash.omit';
 import { Input, Button } from 'antd';
-import { SchemaForm } from 'tea-form';
+import SchemaForm from 'tea-form';
 import './index.css';
 
 class FInput extends React.Component<any> {
@@ -18,9 +18,11 @@ class FInput extends React.Component<any> {
 }
 const fields: any[] = [
   {
+    indexes: ['common'],
     name: 'test_1',
     widget: 'Input',
-    title: '测试字段1'
+    title: '测试字段1',
+    rules: { check: { required: true } }
   }
 ];
 const configure = {
