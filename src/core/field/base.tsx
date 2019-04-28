@@ -1,7 +1,6 @@
 import * as React from 'react';
 import get from 'lodash.get';
 import set from 'lodash.set';
-import clone from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';
 import { IFieldProps, IParams } from '../../typings';
 const { PureComponent } = React;
@@ -45,13 +44,12 @@ export default class BaseField extends PureComponent<IFieldProps> {
     enter && dispatch('removeFieldCheckRule', { [name]: enter });
     unsubscribe('setFieldsValue', this.onDependNames);
   }
-  handleExtraProps = (extra: any) => {
-    const extraProps: any = {};
-    const { common, contextAPI } = this.props;
-    const { isCustom = false } = common || {};
-    isCustom && (extraProps.contextAPI = contextAPI);
-    Object.assign(extraProps, extra);
-    return extraProps;
+  onChange = (event: any) => {
+    const { name, common, contextAPI } = this.props;
+    const { valueName = null } = common || {};
+    const { dispatch } = contextAPI;
+    const value = valueName ? get(event, valueName) : event;
+    dispatch('setFieldsValue', { [name]: value });
   };
   onDependNames = (params: IParams) => {
     const { dependNames, prevData } = this;
@@ -67,16 +65,36 @@ export default class BaseField extends PureComponent<IFieldProps> {
     });
     isForceUpdate && this.forceUpdate();
   };
-  onChange = (event: any) => {
-    const { name, common, contextAPI } = this.props;
-    const { valueName = null } = common || {};
-    const { dispatch } = contextAPI;
-    const value = valueName ? get(event, valueName) : event;
-    dispatch('setFieldsValue', { [name]: value });
+  onDependConstant = () => {};
+  onDependFunction = () => {};
+  onProps = () => {
+    const { common, contextAPI } = this.props;
+    const { getConstant, getFunction } = contextAPI;
+    const { extraProps = {} } = common;
+    return Object.keys(extraProps).reduce((prev, key) => {
+      const { type, value } = extraProps[key];
+      switch (type) {
+        case 'constant':
+          prev[key] = getConstant(value);
+          break;
+        case 'function':
+          prev[key] = getFunction(value);
+          break;
+        default:
+          prev[key] = value;
+          break;
+      }
+      return prev;
+    }, {});
   };
-  onEvent = () => {};
+  handleExtraProps = (extra: any) => {
+    const extraProps: any = this.onProps();
+    const { common, contextAPI } = this.props;
+    const { isCustom = false } = common || {};
+    isCustom && (extraProps.contextAPI = contextAPI);
+    return Object.assign({}, extraProps, extra);
+  };
   render() {
-    console.log('render');
     const { Widget, onChange } = this;
     const { name, title, common, rules, props, contextAPI } = this.props;
     const { message = __DEFAULT_MESSAGE__ } = common;
