@@ -24,6 +24,8 @@ export class SchemaForm extends PureComponent<IProps> {
     const { storeModel, contextModel, actionModel } = this;
     const { subscribe } = actionModel;
     subscribe('setFieldSchema', toPairsFunc(contextModel.setFieldSchema));
+    subscribe('setConstant', toPairsFunc(contextModel.setConstant));
+    subscribe('setFunction', toPairsFunc(contextModel.setFunction));
     subscribe('setFieldCheckRule', toPairsFunc(storeModel.setFieldCheckRule));
     subscribe('setFieldEnterRule', toPairsFunc(storeModel.setFieldEnterRule));
     subscribe('removeFieldCheckRule', toPairsFunc(storeModel.cancelFieldCheckRule));
