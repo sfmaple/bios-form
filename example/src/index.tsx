@@ -22,6 +22,7 @@ const fields: any[] = [
     name: 'test_1',
     widget: 'Input',
     title: '测试字段1',
+    common: { dependNames: ['test_2.a'] },
     rules: { check: { required: true } }
   }
 ];
@@ -44,7 +45,9 @@ const configure = {
 };
 class App extends React.Component {
   form: any;
-  componentDidMount() {}
+  componentDidMount() {
+    this.form.setFieldsValue({ test_2: { a: 1 } });
+  }
   onSubmit = () => {
     const formData = this.form.onSubmit();
     console.log(this.form);

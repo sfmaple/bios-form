@@ -28,8 +28,8 @@ export class SchemaForm extends PureComponent<IProps> {
     subscribe('setFieldEnterRule', toPairsFunc(storeModel.setFieldEnterRule));
     subscribe('removeFieldCheckRule', toPairsFunc(storeModel.cancelFieldCheckRule));
     subscribe('removeFieldEnterRule', toPairsFunc(storeModel.cancelFieldEnterRule));
-    subscribe('setFieldsError', this.setFieldsError);
-    subscribe('setFieldsValue', this.setFieldsValue);
+    subscribe('setFieldsError', toPairsFunc(storeModel.setFieldError));
+    subscribe('setFieldsValue', toPairsFunc(storeModel.setFieldValue));
     subscribe('onCheck', this.onCheck);
     subscribe('onSubmit', this.onSubmit);
   }
@@ -50,8 +50,16 @@ export class SchemaForm extends PureComponent<IProps> {
   }
   public getFieldsError = (names: string[]) => this.storeModel.getFieldsError(names);
   public getFieldsValue = (names: string[]) => this.storeModel.getFieldsValue(names);
-  public setFieldsError = (params: IParams) => toPairsFunc(this.storeModel.setFieldError)(params);
-  public setFieldsValue = (params: IParams) => toPairsFunc(this.storeModel.setFieldValue)(params);
+  public setFieldsError = (params: IParams) => {
+    const { actionModel } = this;
+    const { dispatch } = actionModel;
+    dispatch('setFieldsError', params);
+  };
+  public setFieldsValue = (params: IParams) => {
+    const { actionModel } = this;
+    const { dispatch } = actionModel;
+    dispatch('setFieldsValue', params);
+  };
   public onCheck = () => {};
   public onSubmit = () => {};
   render() {
