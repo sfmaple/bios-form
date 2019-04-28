@@ -12,16 +12,20 @@ export default class BaseField extends PureComponent<IFieldProps> {
     rules: {}
   };
   private dependNames: string[] = [];
+  private dependConstants: string[] = [];
+  private dependFunctions: string[] = [];
   private prevData: any;
   private Widget: React.ComponentClass;
   constructor(props: IFieldProps) {
     super(props);
     const { name, widget, common, contextAPI } = this.props;
-    const { dependNames = [] } = common;
+    const { dependNames = [], dependConstants = [], dependFunctions = [] } = common;
     const { getWidget, getFieldsValue } = contextAPI;
     this.Widget = getWidget(widget);
     const formData = getFieldsValue();
     this.dependNames = name ? dependNames.concat(name) : dependNames;
+    this.dependConstants = dependConstants;
+    this.dependFunctions = dependFunctions;
     this.prevData = this.dependNames.reduce((prev: any, name: string) => {
       const value = get(formData, name);
       set(prev, name, value);
@@ -35,6 +39,8 @@ export default class BaseField extends PureComponent<IFieldProps> {
     check && dispatch('setFieldCheckRule', { [name]: check });
     enter && dispatch('setFieldCheckRule', { [name]: enter });
     subscribe('setFieldsValue', this.onDependNames);
+    subscribe('setConstant', this.onDependConstants);
+    subscribe('setFunction', this.onDependFunctions);
   }
   componentWillUnmount() {
     const { name, rules, contextAPI } = this.props;
@@ -43,7 +49,39 @@ export default class BaseField extends PureComponent<IFieldProps> {
     check && dispatch('removeFieldCheckRule', { [name]: check });
     enter && dispatch('removeFieldCheckRule', { [name]: enter });
     unsubscribe('setFieldsValue', this.onDependNames);
+    unsubscribe('setConstant', this.onDependConstants);
+    unsubscribe('setFunction', this.onDependFunctions);
   }
+  onDependNames = (params: IParams) => {
+    const { dependNames, prevData } = this;
+    let isUpdate = false;
+    dependNames.forEach((name: string) => {
+      const prevValue = get(prevData, name);
+      const nextValue = get(params, name);
+      const judge = !isEqual(nextValue, prevValue);
+      if (judge) {
+        set(prevData, name, nextValue);
+        !isUpdate && (isUpdate = judge);
+      }
+    });
+    isUpdate && this.forceUpdate();
+  };
+  onDependConstants = (params: IParams) => {
+    const { dependConstants } = this;
+    const keys = Object.keys(params);
+    const isUpdate = dependConstants.some((key) => {
+      return keys.indexOf(key) !== -1;
+    });
+    isUpdate && this.forceUpdate();
+  };
+  onDependFunctions = (params: IParams) => {
+    const { dependFunctions } = this;
+    const keys = Object.keys(params);
+    const isUpdate = dependFunctions.some((key) => {
+      return keys.indexOf(key) !== -1;
+    });
+    isUpdate && this.forceUpdate();
+  };
   onChange = (event: any) => {
     const { name, common, contextAPI } = this.props;
     const { valueName = null } = common || {};
@@ -51,22 +89,6 @@ export default class BaseField extends PureComponent<IFieldProps> {
     const value = valueName ? get(event, valueName) : event;
     dispatch('setFieldsValue', { [name]: value });
   };
-  onDependNames = (params: IParams) => {
-    const { dependNames, prevData } = this;
-    let isForceUpdate = false;
-    dependNames.forEach((name: string) => {
-      const prevValue = get(prevData, name);
-      const nextValue = get(params, name);
-      const isUpdate = !isEqual(nextValue, prevValue);
-      if (isUpdate) {
-        set(prevData, name, nextValue);
-        !isForceUpdate && (isForceUpdate = isUpdate);
-      }
-    });
-    isForceUpdate && this.forceUpdate();
-  };
-  onDependConstant = () => {};
-  onDependFunction = () => {};
   onProps = () => {
     const { common, contextAPI } = this.props;
     const { getConstant, getFunction } = contextAPI;

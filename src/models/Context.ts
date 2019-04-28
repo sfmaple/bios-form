@@ -19,8 +19,11 @@ export default class ContextModel {
   public getFunction = (key: string) => this.functions[key] || null;
   public getFieldSchema = (id: string) => this.fieldSchemas[id] || null;
   // Bean: SET Function
-  public setConstants = (key: string, constant: any) => {
+  public setConstant = (key: string, constant: any) => {
     this.constants[key] = constant;
+  };
+  public setFunction = (key: string, func: any) => {
+    this.functions[key] = func;
   };
   public setFieldSchema = (id: string, params: any) => {
     const fieldSchema = this.fieldSchemas[id] || {};
