@@ -2,10 +2,10 @@ import * as React from 'react';
 import get from 'lodash.get';
 import set from 'lodash.set';
 import isEqual from 'lodash.isequal';
+import { DEFAULT_CHECK_MESSAGE } from '../../constants';
 import { IFieldProps, IParams } from '../../typings';
 const { PureComponent } = React;
 
-const __DEFAULT_MESSAGE__ = '数据校验未通过';
 export default class BaseField extends PureComponent<IFieldProps> {
   static defaultProps = {
     common: {},
@@ -97,7 +97,7 @@ export default class BaseField extends PureComponent<IFieldProps> {
   render() {
     const { Widget, onChange } = this;
     const { name, title, common, rules, props, contextAPI } = this.props;
-    const { message = __DEFAULT_MESSAGE__ } = common;
+    const { message = DEFAULT_CHECK_MESSAGE } = common;
     const required = get(rules, 'check.required', false);
     const { getFieldsError, getFieldsValue } = contextAPI;
     const error = getFieldsError([name])[name];
