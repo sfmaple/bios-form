@@ -30,6 +30,7 @@ branches:
 # GitHub Pages 部署
 deploy:
   provider: pages
+  keep-history: true
   skip_cleanup: true
   # 在项目仪表盘的 Settings -> Environment Variables 中配置
   github_token: $GITHUB_TOKEN
