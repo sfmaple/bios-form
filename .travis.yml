@@ -24,9 +24,10 @@ script:
 
 # 分支白名单
 branches:
+  except:
+    - gh-pages
   only:
     - master # 只对 master 分支进行构建
-    - gh-pages
 
 # GitHub Pages 部署
 deploy:
