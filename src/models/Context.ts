@@ -1,34 +1,37 @@
-import { Context } from '../typings';
+import { IContext } from '../typings';
 import * as _widgets from '../widgets';
 
 export default class ContextModel {
-  private widgets = { ..._widgets };
+  private widgets = {};
   private constants = {};
   private functions = {};
   private fieldSchemas = {};
 
-  constructor(context: Context) {
+  constructor(context: IContext) {
     const { widgets, constants, functions } = context;
-    this.widgets = Object.assign(this.widgets, widgets || {});
-    this.functions = functions || {};
+    this.widgets = Object.assign({}, _widgets, widgets);
     this.constants = constants || {};
+    this.functions = functions || {};
   }
-  // GET Function
+  // Bean: GET Function
   public getWidget = (key: string) => this.widgets[key] || null;
   public getConstant = (key: string) => this.constants[key] || null;
   public getFunction = (key: string) => this.functions[key] || null;
-  public getFieldSchema = (name: string) => this.fieldSchemas[name] || null;
-  // SET Function
-  public setConstants = (key: string, constant: any) => {
+  public getFieldSchema = (id: string) => this.fieldSchemas[id] || null;
+  // Bean: SET Function
+  public setConstant = (key: string, constant: any) => {
     this.constants[key] = constant;
   };
-  public setFieldSchema = (name: string, params: any) => {
-    const fieldSchema = this.fieldSchemas[name] || {};
+  public setFunction = (key: string, func: any) => {
+    this.functions[key] = func;
+  };
+  public setFieldSchema = (id: string, params: any) => {
+    const fieldSchema = this.fieldSchemas[id] || {};
     params &&
       Object.keys(params).forEach((schemaName) => {
         const schemaValue = params[schemaName];
         fieldSchema[schemaName] = schemaValue;
       });
-    this.fieldSchemas[name] = fieldSchema;
+    this.fieldSchemas[id] = fieldSchema;
   };
 }
