@@ -1,7 +1,15 @@
+import { ReactElement } from 'react';
 import Mitt from './lib/mitt';
 
-// form
-export interface FormProps {
+// Schema
+export type IFormSchema = any;
+export type IFieldSchema = any;
+export type IContextAPI = any;
+// Form Component
+export type IParams = {
+  [key: string]: any;
+};
+export interface IProps {
   [key: string]: any;
 }
 export interface TypeProps {
@@ -10,17 +18,28 @@ export interface TypeProps {
 export interface BaseProps {
   [key: string]: any;
 }
-// field
-export interface FieldProps {
+// Field Component
+export interface IFieldProps {
+  [key: string]: any;
+}
+export interface IFieldState {
   [key: string]: any;
 }
 // model types
-export type Error = any;
-export type Rule = any;
-export type Context = any;
+export type CheckRule = any;
+export type EnterRule = any;
+export type IStore = {
+  initialData: any;
+};
+export type IContext = {
+  widgets: { [key: string]: ReactElement };
+  constants: { [key: string]: any };
+  functions: { [key: string]: Function };
+};
+export type IAction = {
+  actions: Action[];
+};
 export type Action = {
   name: string;
   handler: Mitt.Handler;
 };
-// schema
-export type FieldSchema = any;
