@@ -35,5 +35,5 @@ const SchemaField = memo((props: IFieldProps) => {
   const isShow = indexes && index && indexes.includes(index) ? true : null;
   return isShow && <Base __count={count} {...nextSchema} contextAPI={contextAPI} />;
 });
-
+SchemaField.displayName = 'SchemaField';
 export default SchemaField;
