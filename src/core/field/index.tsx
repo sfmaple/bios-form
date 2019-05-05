@@ -1,50 +1,39 @@
 import * as React from 'react';
-import get from 'lodash.get';
-import Context from '../context';
-import { FieldProps } from '../../typings';
-const { memo, useState, useEffect, useContext, useCallback } = React;
+import set from 'lodash.set';
+import omit from 'lodash.omit';
+import clone from 'lodash.clonedeep';
+import Base from './base';
+import { IFieldProps, IParams } from '../../typings';
+const { memo, useState, useEffect, useCallback } = React;
 
-const IField = memo((fieldProps: FieldProps) => {
-  const contextAPI = useContext(Context);
-  const { getWidget, getFieldsValue, getFieldsError, dispatch } = contextAPI;
-  const { name, widget, CRule, IRule, ...rest } = fieldProps;
-  const [Widget, setWidget]: any = useState(null);
-  useEffect(() => {
-    const Widget = getWidget(widget);
-    setWidget(() => Widget);
-  }, [widget]);
-  const onChange = useCallback((value) => {
-    dispatch('setFieldsValue', { [name]: value });
+const SchemaField = memo((props: IFieldProps) => {
+  const { formSchema, id, contextAPI } = props;
+  const { getFieldSchema, subscribe, unsubscribe } = contextAPI;
+  const [count, setCount] = useState(0);
+  const onDependSchema = useCallback((params: IParams) => {
+    const keys = Object.keys(params);
+    const isUpdate = keys.some((key) => key === id);
+    isUpdate && setCount(count + 1);
   }, []);
   useEffect(() => {
-    CRule && dispatch('setFieldCRule', { [name]: CRule });
-    IRule && dispatch('setFieldIRule', { [name]: IRule });
+    subscribe('setFieldSchema', onDependSchema);
     return () => {
-      CRule && dispatch('setFieldCRule', { [name]: undefined });
-      IRule && dispatch('setFieldIRule', { [name]: undefined });
+      unsubscribe('setFieldSchema', onDependSchema);
     };
   }, []);
-
-  const { required = false } = CRule || {};
-  const { status, title, common, props } = rest;
-  const { isCustom = false } = common || {};
-  const error = getFieldsError([name])[name];
-  const value = name ? get(getFieldsValue([name]), name) : getFieldsValue();
-  const nextProps = { status, error, value, onChange, ...props };
-  return (
-    Widget && (
-      <div>
-        {title != null && (
-          <div>
-            {required && <span style={{ color: 'red' }}>* </span>}
-            {!!title && `${title}：`}
-          </div>
-        )}
-        <div>
-          <Widget context={isCustom ? contextAPI : {}} {...nextProps} />
-        </div>
-      </div>
-    )
-  );
+  const fieldSchema = omit(props, ['formSchema', 'contextAPI']);
+  const schemaById = getFieldSchema(id);
+  const nextSchema = clone(fieldSchema);
+  const pluginSchema = Object.assign({}, schemaById);
+  pluginSchema &&
+    Object.keys(pluginSchema).forEach((name) => {
+      const schema = pluginSchema[name];
+      set(nextSchema, name, schema);
+    });
+  const { index } = formSchema;
+  const { indexes } = nextSchema;
+  const isShow = indexes && index && indexes.includes(index) ? true : null;
+  return isShow && <Base __count={count} {...nextSchema} contextAPI={contextAPI} />;
 });
-export default IField;
+
+export default SchemaField;

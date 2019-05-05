@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "ES5",
     "module": "commonjs",
-    "lib": ["es6", "dom"],
-    "sourceMap": true,
+    "lib": ["ES2018", "dom"],
+    "sourceMap": false,
     "allowJs": true,
     "jsx": "react",
     "outDir": "./dist",
@@ -25,8 +25,7 @@
     "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */
   },
   "include": [
-    "src/**/*",
-    "typings/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
