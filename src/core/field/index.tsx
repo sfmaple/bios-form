@@ -12,7 +12,7 @@ const SchemaField = memo((props: IFieldProps) => {
   const [count, setCount] = useState(0);
   const onDependSchema = useCallback((params: IParams) => {
     const keys = Object.keys(params);
-    const isUpdate = keys.some((key) => key === id);
+    const isUpdate = !!id && keys.some((key) => key === id);
     isUpdate && setCount(count + 1);
   }, []);
   useEffect(() => {

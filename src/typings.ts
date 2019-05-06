@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { Component } from 'react';
 import Mitt from './lib/mitt';
 
 // Schema
@@ -32,7 +32,7 @@ export type IStore = {
   initialData: any;
 };
 export type IContext = {
-  widgets: { [key: string]: ReactElement };
+  widgets: { [key: string]: Component };
   constants: { [key: string]: any };
   functions: { [key: string]: Function };
 };
