@@ -16,7 +16,7 @@
     "noImplicitThis": false,
     /* Module Resolution Options */
     "moduleResolution": "node",
-    "typeRoots": ["node_modules/@types"],
+    // "typeRoots": ["node_modules/@types"],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     /* Experimental Options */
@@ -25,7 +25,8 @@
     "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "__tests__/**/*"
   ],
   "exclude": [
     "node_modules",
