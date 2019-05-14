@@ -1,17 +1,5 @@
 jobs:
   include:
+    - stage: test
     - stage: npm release
-      if: tag IS present
-      language: node_js
-      node_js: "10"
-      script: yarn compile
-      before_deploy:
-        - cd dist
-      deploy:
-        provider: npm
-        email: "$NPM_EMAIL"
-        api_key: "$NPM_TOKEN"
-        skip_cleanup: true
-        on:
-          tags: true
  
