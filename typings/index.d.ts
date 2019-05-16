@@ -1,1 +1,1 @@
-declare module 'tea-form';
+declare module 'bios-form';
