@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import omit from 'lodash.omit';
 import { Input, Button } from 'antd';
-import SchemaForm from 'tea-form';
+import SchemaForm from 'bios-form';
 import './index.css';
 
 class FInput extends React.Component<any> {
