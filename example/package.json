@@ -4,18 +4,18 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "react-scripts-ts start",
+    "start": "export SKIP_PREFLIGHT_CHECK=true && react-scripts-ts start",
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject"
   },
   "dependencies": {
     "antd": "^3.12.4",
+    "bios-form": "../",
     "lodash.omit": "^4.5.0",
     "react": "^16.8.5",
     "react-dom": "^16.8.5",
-    "react-scripts-ts": "^4.0.8",
-    "bios-form": "../"
+    "react-scripts-ts": "^4.0.8"
   },
   "devDependencies": {
     "@types/lodash.omit": "^4.5.5",
