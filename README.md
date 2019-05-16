@@ -7,8 +7,8 @@
 
 The bios is taken from Latin βios. The bios-form is JavaScript library for building dynamic form.
 
-* **Configuration** The bios-form makes it simple to create form. Configure form make your code more quicker to develop, simpler to understand, and easier to use.
-* **Custom**
+* **Configuration:** The bios-form makes it simple to create form. Configure form make your code more quicker to develop, simpler to understand, and easier to use.
+* **Compatibility:** The bios-form makes it quick to compatible components. It provide many decorator function to solve the adaptation problem.
 
 ## Installation
 
