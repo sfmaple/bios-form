@@ -15,7 +15,7 @@
     "react": "^16.8.5",
     "react-dom": "^16.8.5",
     "react-scripts-ts": "^4.0.8",
-    "tea-form": "../"
+    "bios-form": "../"
   },
   "devDependencies": {
     "@types/lodash.omit": "^4.5.5",
