@@ -1,6 +1,6 @@
 {
   "name": "bios-form",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "author": "sfmaple",
   "license": "MIT",
   "main": "dist/index.js",
