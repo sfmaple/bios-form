@@ -9,9 +9,11 @@ install:
 
 stages:
   - name: test
+    if: branch IN (master)
   - name: gitbook
+    if: branch IN (master) && type IN (pull_request)
   - name: release
-    if: tag IS present
+    if: tag =~ ^v
 
 jobs:
   include:
@@ -35,8 +37,6 @@ jobs:
         local_dir: build
         name: $GIT_NAME
         email: $GIT_EMAIL
-        on:
-          tags: true
     - stage: release
       script: yarn lint && yarn test
       before_deploy: yarn compile
