@@ -1,6 +1,5 @@
-os: linux
 language: node_js
-node_js: "10"
+node_js: "12"
 
 cache:
   - yarn
@@ -9,9 +8,11 @@ install:
 
 stages:
   - name: test
-  - name: gitbook
-  - name: deploy
+  - name: release
     if: tag IS present
+  - name: gitbook
+    if: type IN (pull_request)
+
 
 jobs:
   include:
@@ -19,6 +20,17 @@ jobs:
       script:
         - yarn lint
         - yarn test
+      on:
+        branch: master
+    - stage: release
+      script: yarn compile
+      deploy:
+        provider: npm
+        email: $NPM_EMAIL
+        api_key: $NPM_TOKEN
+        skip_cleanup: true
+        on:
+          tags: true
     - stage: gitbook
       install:
         - yarn global add gitbook-cli
@@ -35,14 +47,3 @@ jobs:
         email: $GIT_EMAIL
         on:
           branch: master
-    - stage: deploy
-      script: yarn compile
-      before_deploy:
-        - cd dist
-      deploy:
-​        provider: npm
-​        email: $NPM_EMAIL
-​        api_key: $NPM_TOKEN
-​        skip_cleanup: true
-​        on:
-​          tags: true
