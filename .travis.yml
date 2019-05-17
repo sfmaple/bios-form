@@ -7,10 +7,6 @@ cache:
 install:
   - yarn
 
-branches:
-  only:
-    - master
-
 stages:
   - name: test
   - name: gitbook
@@ -23,6 +19,8 @@ jobs:
       script:
         - yarn lint
         - yarn test
+      on:
+        branch: master
     - stage: gitbook
       install:
         - yarn global add gitbook-cli
@@ -38,7 +36,7 @@ jobs:
         name: $GIT_NAME
         email: $GIT_EMAIL
         on:
-          branch: master
+          tags: true
     - stage: release
       script: yarn lint && yarn test
       before_deploy: yarn compile
