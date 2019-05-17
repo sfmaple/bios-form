@@ -7,10 +7,14 @@ cache:
 install:
   - yarn
 
+branches:
+  only:
+    - master
+
 stages:
   - name: test
   - name: gitbook
-  - name: deploy
+  - name: release
     if: tag IS present
 
 jobs:
@@ -35,10 +39,9 @@ jobs:
         email: $GIT_EMAIL
         on:
           branch: master
-    - stage: deploy
-      script: yarn compile
-      before_deploy:
-        - cd dist
+    - stage: release
+      script: yarn lint && yarn test
+      before_deploy: yarn compile
       deploy:
 ​        provider: npm
 ​        email: $NPM_EMAIL
