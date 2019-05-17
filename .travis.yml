@@ -9,10 +9,10 @@ install:
 stages:
   - name: test
     if: branch IN (master)
-  - name: gitbook
-    if: branch IN (master) && type IN (pull_request)
   - name: release
     if: tag IS present
+  - name: gitbook
+    if: branch IN (master) && type IN (pull_request)
 
 jobs:
   include:
@@ -37,7 +37,7 @@ jobs:
         name: $GIT_NAME
         email: $GIT_EMAIL
     - stage: release
-      before_deploy: yarn compile
+      script: yarn compile
       deploy:
 ​        provider: npm
 ​        email: $NPM_EMAIL
