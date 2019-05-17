@@ -1,26 +1,24 @@
-os: linux
 language: node_js
-node_js: "10"
+node_js: "12"
 
 cache:
   - yarn
 install:
   - yarn
+script:
+  - yarn lint
+  - yarn test
+on:
+  branch: master
 
 stages:
-  - name: test
-  - name: gitbook
   - name: release
     if: tag IS present
+  - name: gitbook
+
 
 jobs:
   include:
-    - stage: test
-      script:
-        - yarn lint
-        - yarn test
-      on:
-        branch: master
     - stage: gitbook
       install:
         - yarn global add gitbook-cli
@@ -36,10 +34,9 @@ jobs:
         name: $GIT_NAME
         email: $GIT_EMAIL
         on:
-          tags: true
+          branch: master
     - stage: release
-      script: yarn lint && yarn test
-      before_deploy: yarn compile
+      script: yarn compile
       deploy:
 ​        provider: npm
 ​        email: $NPM_EMAIL
