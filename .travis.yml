@@ -5,23 +5,20 @@ cache:
   - yarn
 install:
   - yarn
+script:
+  - yarn lint
+  - yarn test
+on:
+  branch: master
 
 stages:
-  - name: test
-    if: branch IN (master)
   - name: release
     if: tag IS present
   - name: gitbook
-    if: branch IN (master) && type IN (pull_request)
+
 
 jobs:
   include:
-    - stage: test
-      script:
-        - yarn lint
-        - yarn test
-      on:
-        branch: master
     - stage: gitbook
       install:
         - yarn global add gitbook-cli
@@ -36,6 +33,8 @@ jobs:
         local_dir: build
         name: $GIT_NAME
         email: $GIT_EMAIL
+        on:
+          branch: master
     - stage: release
       script: yarn compile
       deploy:
