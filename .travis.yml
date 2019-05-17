@@ -38,7 +38,6 @@ jobs:
         name: $GIT_NAME
         email: $GIT_EMAIL
     - stage: release
-      script: yarn lint && yarn test
       before_deploy: yarn compile
       deploy:
 ​        provider: npm
