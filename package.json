@@ -9,7 +9,8 @@
     "compile": "NODE_ENV=production rollup -c",
     "watch": "rollup -cw",
     "lint": "tslint --project tsconfig.json",
-    "test": "jest"
+    "test": "jest",
+    "postversion": "git push --follow-tags"
   },
   "dependencies": {
     "axios": "^0.18.0",
