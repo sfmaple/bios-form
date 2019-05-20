@@ -3,6 +3,18 @@
 ## FieldSchema
 
 ```typescript
+enum FieldActionType {
+  widget = 'widget',
+  constant = 'constant',
+  function = 'function',
+  eval = 'eval',
+  custom = 'custom'
+}
+type FieldAction = {
+  type: FieldActionType;
+  from: string;
+  to: string;
+}
 type FieldSchema = {
   id?: string; // it was used on fieldSchema and action
   indexes?: string[];
@@ -24,7 +36,9 @@ type FieldSchema = {
       functions?: string[]
     };
   };
-  action?: any[];
+  action?: {
+    plusProps?: FieldAction[];
+  };
   props?: any;
 }
 ```
