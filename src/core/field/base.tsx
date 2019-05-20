@@ -1,87 +1,56 @@
 import * as React from 'react';
 import get from 'lodash.get';
-import set from 'lodash.set';
-import isEqual from 'lodash.isequal';
+import toAction from '../../utils/toAction';
+import toDepend from '../../utils/toDepend';
 import { DEFAULT_CHECK_MESSAGE } from '../../constants';
-import { IFieldProps, IParams } from '../../typings';
+import { IFieldProps, IFieldState } from '../../typings';
 const { PureComponent } = React;
 
-export default class BaseField extends PureComponent<IFieldProps> {
+export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
   static defaultProps = {
     common: {},
-    rules: {}
+    rules: {},
+    action: {}
   };
-  private dependNames: string[] = [];
-  private dependConstants: string[] = [];
-  private dependFunctions: string[] = [];
-  private prevData: any;
   private Widget: React.ComponentClass;
   constructor(props: IFieldProps) {
     super(props);
-    const { name, widget, common, contextAPI } = this.props;
-    const { dependNames = [], dependConstants = [], dependFunctions = [] } = common;
-    const { getWidget, getFieldsValue } = contextAPI;
+    const { widget, common, contextAPI } = this.props;
+    const { defaultValue } = common;
+    const { getWidget, getFieldsValue, dispatch } = contextAPI;
     this.Widget = getWidget(widget);
-    const formData = getFieldsValue();
-    this.dependNames = name ? dependNames.concat(name) : dependNames;
-    this.dependConstants = dependConstants;
-    this.dependFunctions = dependFunctions;
-    this.prevData = this.dependNames.reduce((prev: any, name: string) => {
-      const value = get(formData, name);
-      set(prev, name, value);
-      return prev;
-    }, {});
+    this.state = {}
+    toDepend.call(this);
+    toAction.call(this);
+    const value = name ? get(getFieldsValue([name]), name) : getFieldsValue();
+    if (value === undefined && defaultValue !== undefined) {
+      dispatch('setFieldsValue', { [value || '']: defaultValue });
+    }
   }
-  componentDidMount() {
+  componentWillMount() {
+    // @ts-ignore
+    const { onDependNames, onDependConstants, onDependFunctions } = this;
     const { name, rules, contextAPI } = this.props;
     const { check, enter } = rules;
     const { subscribe, dispatch } = contextAPI;
     check && dispatch('setFieldCheckRule', { [name]: check });
     enter && dispatch('setFieldCheckRule', { [name]: enter });
-    subscribe('setFieldsValue', this.onDependNames);
-    subscribe('setConstant', this.onDependConstants);
-    subscribe('setFunction', this.onDependFunctions);
+    subscribe('setFieldsValue', onDependNames);
+    subscribe('setConstant', onDependConstants);
+    subscribe('setFunction', onDependFunctions);
   }
   componentWillUnmount() {
+    // @ts-ignore
+    const { onDependNames, onDependConstants, onDependFunctions } = this;
     const { name, rules, contextAPI } = this.props;
     const { check, enter } = rules;
     const { unsubscribe, dispatch } = contextAPI;
     check && dispatch('removeFieldCheckRule', { [name]: check });
     enter && dispatch('removeFieldCheckRule', { [name]: enter });
-    unsubscribe('setFieldsValue', this.onDependNames);
-    unsubscribe('setConstant', this.onDependConstants);
-    unsubscribe('setFunction', this.onDependFunctions);
+    unsubscribe('setFieldsValue', onDependNames);
+    unsubscribe('setConstant', onDependConstants);
+    unsubscribe('setFunction', onDependFunctions);
   }
-  onDependNames = (params: IParams) => {
-    const { dependNames, prevData } = this;
-    let isUpdate = false;
-    dependNames.forEach((name: string) => {
-      const prevValue = get(prevData, name);
-      const nextValue = get(params, name);
-      const judge = !isEqual(nextValue, prevValue);
-      if (judge) {
-        set(prevData, name, nextValue);
-        !isUpdate && (isUpdate = judge);
-      }
-    });
-    isUpdate && this.forceUpdate();
-  };
-  onDependConstants = (params: IParams) => {
-    const { dependConstants } = this;
-    const keys = Object.keys(params);
-    const isUpdate = dependConstants.some((key) => {
-      return keys.indexOf(key) !== -1;
-    });
-    isUpdate && this.forceUpdate();
-  };
-  onDependFunctions = (params: IParams) => {
-    const { dependFunctions } = this;
-    const keys = Object.keys(params);
-    const isUpdate = dependFunctions.some((key) => {
-      return keys.indexOf(key) !== -1;
-    });
-    isUpdate && this.forceUpdate();
-  };
   onChange = (event: any) => {
     const { name, common, contextAPI } = this.props;
     const { valueName = null } = common || {};

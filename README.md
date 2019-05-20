@@ -15,6 +15,8 @@ type FieldSchema = {
     enter;
   };
   common;
+  // base on id
+  action;
   props
 }
 ```

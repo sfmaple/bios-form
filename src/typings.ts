@@ -39,6 +39,9 @@ export type IContext = {
 export type IAction = {
   actions: Action[];
 };
+export type CAction = {
+  [key: string]: any;
+};
 export type Action = {
   name: string;
   handler: Mitt.Handler;
