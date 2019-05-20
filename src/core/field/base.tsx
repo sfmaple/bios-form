@@ -19,13 +19,16 @@ export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
     const { defaultValue } = common;
     const { getWidget, getFieldsValue, dispatch } = contextAPI;
     this.Widget = getWidget(widget);
-    this.state = {}
+    this.state = { isError: false }
     toDepend.call(this);
     toAction.call(this);
     const value = name ? get(getFieldsValue([name]), name) : getFieldsValue();
     if (value === undefined && defaultValue !== undefined) {
       dispatch('setFieldsValue', { [value || '']: defaultValue });
     }
+  }
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, msgError: error.message };
   }
   componentWillMount() {
     // @ts-ignore
@@ -51,41 +54,24 @@ export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
     unsubscribe('setConstant', onDependConstants);
     unsubscribe('setFunction', onDependFunctions);
   }
+  handleExtraProps = (extra: any) => {
+    // @ts-ignore
+    const { plusProps } = this
+    const extraProps = plusProps && plusProps()
+    const { common, contextAPI } = this.props;
+    const { isCustom = false } = common || {};
+    isCustom && (extra.contextAPI = contextAPI);
+    return Object.assign({}, extraProps, extra);
+  };
   onChange = (event: any) => {
     const { name, common, contextAPI } = this.props;
     const { valueName = null } = common || {};
     const { dispatch } = contextAPI;
     const value = valueName ? get(event, valueName) : event;
-    dispatch('setFieldsValue', { [name]: value });
-  };
-  onProps = () => {
-    const { common, contextAPI } = this.props;
-    const { getConstant, getFunction } = contextAPI;
-    const { extraProps = {} } = common;
-    return Object.keys(extraProps).reduce((prev, key) => {
-      const { type, value } = extraProps[key];
-      switch (type) {
-        case 'constant':
-          prev[key] = getConstant(value);
-          break;
-        case 'function':
-          prev[key] = getFunction(value);
-          break;
-        default:
-          prev[key] = value;
-          break;
-      }
-      return prev;
-    }, {});
-  };
-  handleExtraProps = (extra: any) => {
-    const extraProps: any = this.onProps();
-    const { common, contextAPI } = this.props;
-    const { isCustom = false } = common || {};
-    isCustom && (extraProps.contextAPI = contextAPI);
-    return Object.assign({}, extraProps, extra);
+    dispatch('setFieldsValue', { [name || '']: value });
   };
   render() {
+    if (this.state.hasError) return <span>{`Went wrong: ${this.state.msgError}`}</span>
     const { Widget, onChange } = this;
     const { name, title, common, rules, props, contextAPI } = this.props;
     const { message = DEFAULT_CHECK_MESSAGE } = common;

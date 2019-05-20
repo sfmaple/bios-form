@@ -4,19 +4,27 @@
 
 ```typescript
 type FieldSchema = {
-  indexes;
-  id;
-  name;
-  depend;
-  title;
-  widget;
-  rules: {
-    check;
-    enter;
+  id?: string; // it was used on fieldSchema and action
+  indexes?: string[];
+  name?: string;
+  title?: string;
+  widget?: string;
+  rules?: {
+    check?;
+    enter?;
   };
-  common;
-  // base on id
-  action;
-  props
+  common?: {
+    isCustom?:  boolean;
+    valueName?: string;
+    defaultValue?: any;
+    message?: string;
+    depend?: {
+      names?: string[],
+      constants?: string[],
+      functions?: string[]
+    };
+  };
+  action?: any[];
+  props?: any;
 }
 ```

@@ -1,10 +1,10 @@
 
 function parseAction(value: any[]) {
   const { contextAPI } = this.props
-  const { getWidget, getConstant, getFunction, dispatch } = contextAPI;
+  const { getWidget, getConstant, getFunction } = contextAPI;
 
   return value.reduce((prev: any, obj: any) => {
-    const { type, from, to, evalString } = obj
+    const { type, from, to } = obj
     switch(type) {
       case 'widget':
         prev[to] = getWidget(from);
@@ -17,7 +17,7 @@ function parseAction(value: any[]) {
         break;
       case 'eval':
         // tslint:disable-next-line:no-eval
-        prev[to] = eval(evalString);
+        prev[to] = eval(from);
         break;
       case 'custom':
         break;
@@ -28,10 +28,10 @@ function parseAction(value: any[]) {
 
 export default function() {
   const { action } = this.props;
-  const plusState = Object.keys(action).reduce((prev: any, type: string) => {
+  const plusHandlers = Object.keys(action).reduce((prev: any, type: string) => {
     const value = action[type];
-    prev[type] = parseAction.call(this, value);
+    prev[type] = parseAction.bind(this, value);
     return prev;
   }, {});
-  Object.assign(this.state, plusState)
+  Object.assign(this, plusHandlers)
 }
