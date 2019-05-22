@@ -7,11 +7,17 @@ import StoreModel from '../../models/Store';
 import ContextModel from '../../models/Context';
 import ActionModel from '../../models/Action';
 import toPairsFunc from '../../utils/toPairsFunc';
+import onVerifyRule from '../../utils/onVerifyRule';
 import { PICK_FORM_PROPS_KEYS } from '../../constants';
 import { IProps, IParams } from '../../typings';
 const { PureComponent } = React;
 
 export class SchemaForm extends PureComponent<IProps> {
+  static defaultProps = {
+    form: {},
+    fields: []
+  };
+  public isVerify = false;
   private storeModel: StoreModel;
   private contextModel: ContextModel;
   private actionModel: ActionModel;
@@ -26,13 +32,11 @@ export class SchemaForm extends PureComponent<IProps> {
     subscribe('setFieldSchema', toPairsFunc(contextModel.setFieldSchema));
     subscribe('setConstant', toPairsFunc(contextModel.setConstant));
     subscribe('setFunction', toPairsFunc(contextModel.setFunction));
-    subscribe('setFieldCheckRule', toPairsFunc(storeModel.setFieldCheckRule));
     subscribe('setFieldEnterRule', toPairsFunc(storeModel.setFieldEnterRule));
-    subscribe('removeFieldCheckRule', toPairsFunc(storeModel.cancelFieldCheckRule));
-    subscribe('removeFieldEnterRule', toPairsFunc(storeModel.cancelFieldEnterRule));
+    subscribe('setFieldVerifyRule', toPairsFunc(storeModel.setFieldVerifyRule));
     subscribe('setFieldsError', toPairsFunc(storeModel.setFieldError));
-    subscribe('setFieldsValue', toPairsFunc(storeModel.setFieldValue));
-    subscribe('onCheck', this.onCheck);
+    subscribe('setFieldsValue', this.setFieldsValue);
+    subscribe('onValidate', this.onValidate);
     subscribe('onSubmit', this.onSubmit);
   }
   get contextAPI() {
@@ -52,18 +56,34 @@ export class SchemaForm extends PureComponent<IProps> {
   }
   public getFieldsError = (names: string[]) => this.storeModel.getFieldsError(names);
   public getFieldsValue = (names: string[]) => this.storeModel.getFieldsValue(names);
-  public setFieldsError = (params: IParams) => {
-    const { actionModel } = this;
-    const { dispatch } = actionModel;
-    dispatch('setFieldsError', params);
-  };
+  public setFieldsError = (params: IParams) => this.actionModel.dispatch('setFieldsError', params);
   public setFieldsValue = (params: IParams) => {
-    const { actionModel } = this;
-    const { dispatch } = actionModel;
-    dispatch('setFieldsValue', params);
+    const { setFieldValue } = this.storeModel;
+    Object.keys(params).forEach((name) => {
+      const value = params[name];
+      setFieldValue(name, value);
+    });
   };
-  public onCheck = () => {};
-  public onSubmit = () => {};
+  public onValidate = (names: string[]) => {
+    const { formData, getFieldsVerifyRule, setFieldError } = this.storeModel;
+    const verifyRules = getFieldsVerifyRule(names);
+    const errors = names.reduce((prev, name) => {
+      const verifyRule = verifyRules[name];
+      if (verifyRule) {
+        const error = onVerifyRule(formData, verifyRule);
+        prev[name] = error;
+        setFieldError(name, error);
+      }
+      return prev;
+    }, {});
+    return errors;
+  };
+  public onSubmit = () => {
+    const { form } = this.props;
+    if (form.verify) {
+      this.isVerify = true;
+    }
+  };
   render() {
     const { contextAPI, props } = this;
     const { className, style, form, fields, children, ...other } = props;
@@ -72,7 +92,7 @@ export class SchemaForm extends PureComponent<IProps> {
       <div className={className} style={style}>
         <form {...rest}>
           <Provider value={contextAPI}>
-            <TypeForm formSchema={form || {}} fieldsSchema={fields || []} />
+            <TypeForm formSchema={form} fieldsSchema={fields} />
           </Provider>
           {children}
         </form>

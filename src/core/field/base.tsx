@@ -2,7 +2,7 @@ import * as React from 'react';
 import get from 'lodash.get';
 import toAction from '../../utils/toAction';
 import toDepend from '../../utils/toDepend';
-import { DEFAULT_CHECK_MESSAGE } from '../../constants';
+import { DEFAULT_VERIFY_MESSAGE } from '../../constants';
 import { IFieldProps, IFieldState } from '../../typings';
 const { PureComponent } = React;
 
@@ -19,7 +19,7 @@ export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
     const { defaultValue } = common;
     const { getWidget, getFieldsValue, dispatch } = contextAPI;
     this.Widget = getWidget(widget);
-    this.state = { isError: false }
+    this.state = { isError: false };
     toDepend.call(this);
     toAction.call(this);
     const value = name ? get(getFieldsValue([name]), name) : getFieldsValue();
@@ -33,11 +33,11 @@ export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
   componentWillMount() {
     // @ts-ignore
     const { onDependNames, onDependConstants, onDependFunctions } = this;
-    const { name, rules, contextAPI } = this.props;
-    const { check, enter } = rules;
+    const { id, rules, contextAPI } = this.props;
+    const { enter, verify } = rules;
     const { subscribe, dispatch } = contextAPI;
-    check && dispatch('setFieldCheckRule', { [name]: check });
-    enter && dispatch('setFieldCheckRule', { [name]: enter });
+    id && enter && dispatch('setFieldEnterRule', { [id]: enter });
+    id && verify && dispatch('setFieldVerifyRule', { [id]: verify });
     subscribe('setFieldsValue', onDependNames);
     subscribe('setConstant', onDependConstants);
     subscribe('setFunction', onDependFunctions);
@@ -45,19 +45,19 @@ export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
   componentWillUnmount() {
     // @ts-ignore
     const { onDependNames, onDependConstants, onDependFunctions } = this;
-    const { name, rules, contextAPI } = this.props;
-    const { check, enter } = rules;
+    const { id, rules, contextAPI } = this.props;
+    const { enter, verify } = rules;
     const { unsubscribe, dispatch } = contextAPI;
-    check && dispatch('removeFieldCheckRule', { [name]: check });
-    enter && dispatch('removeFieldCheckRule', { [name]: enter });
+    id && enter && dispatch('setFieldEnterRule', { [id]: undefined });
+    id && verify && dispatch('setFieldVerifyRule', { [id]: undefined });
     unsubscribe('setFieldsValue', onDependNames);
     unsubscribe('setConstant', onDependConstants);
     unsubscribe('setFunction', onDependFunctions);
   }
   handleExtraProps = (extra: any) => {
     // @ts-ignore
-    const { plusProps } = this
-    const extraProps = plusProps && plusProps()
+    const { plusProps } = this;
+    const extraProps = plusProps && plusProps();
     const { common, contextAPI } = this.props;
     const { isCustom = false } = common || {};
     isCustom && (extra.contextAPI = contextAPI);
@@ -71,13 +71,13 @@ export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
     dispatch('setFieldsValue', { [name || '']: value });
   };
   render() {
-    if (this.state.hasError) return <span>{`Went wrong: ${this.state.msgError}`}</span>
+    if (this.state.hasError) return <span>{`Went wrong: ${this.state.msgError}`}</span>;
     const { Widget, onChange } = this;
-    const { name, title, common, rules, props, contextAPI } = this.props;
-    const { message = DEFAULT_CHECK_MESSAGE } = common;
-    const required = get(rules, 'check.required', false);
+    const { id, name, title, common, rules, props, contextAPI } = this.props;
+    const { message = DEFAULT_VERIFY_MESSAGE } = common;
+    const required = get(rules, 'verify.required', false);
     const { getFieldsError, getFieldsValue } = contextAPI;
-    const error = getFieldsError([name])[name];
+    const error = getFieldsError([id])[id];
     const value = name ? get(getFieldsValue([name]), name) : getFieldsValue();
     const extraProps = this.handleExtraProps({ value, onChange });
     return (

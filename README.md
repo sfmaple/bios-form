@@ -16,7 +16,7 @@ type FieldAction = {
   to: string;
 }
 type FieldSchema = {
-  id?: string; // it was used on fieldSchema and action
+  id?: string; // it was used on , fieldSchema, rules and action
   indexes?: string[];
   name?: string;
   title?: string;

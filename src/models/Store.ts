@@ -2,15 +2,15 @@ import get from 'lodash.get';
 import set from 'lodash.set';
 import pick from 'lodash.pick';
 import clone from 'lodash.clonedeep';
-import { IStore, CheckRule, EnterRule } from '../typings';
+import { IStore, VerifyRule, EnterRule } from '../typings';
 
 export default class StoreModel {
   private data = {};
   private errors = {};
   // private formRules = {};
-  // The rules used when the form checks field data
-  private fieldsCheckRule = {};
-  // The rules used when the form enters field data
+  // The rules used when the form verify field data
+  private fieldsVerifyRule = {};
+  // The rules used when the form enter field data
   private fieldsEnterRule = {};
   constructor(store: IStore) {
     const { initialData } = store;
@@ -25,17 +25,17 @@ export default class StoreModel {
     return this.errors;
   }
   // Bean: GET Function
-  public getFieldsCheckRule = (names: string[]) => {
-    const { fieldsCheckRule } = this;
-    return names ? pick(fieldsCheckRule, names) : fieldsCheckRule;
+  public getFieldsVerifyRule = (ids: string[]) => {
+    const { fieldsVerifyRule } = this;
+    return ids ? pick(fieldsVerifyRule, ids) : fieldsVerifyRule;
   };
-  public getFieldsEnterRule = (names: string[]) => {
+  public getFieldsEnterRule = (ids: string[]) => {
     const { fieldsEnterRule } = this;
-    return names ? pick(fieldsEnterRule, names) : fieldsEnterRule;
+    return ids ? pick(fieldsEnterRule, ids) : fieldsEnterRule;
   };
-  public getFieldsError = (names: string[]) => {
+  public getFieldsError = (ids: string[]) => {
     const { errors } = this;
-    return names ? pick(errors, names) : errors;
+    return ids ? pick(errors, ids) : errors;
   };
   public getFieldsValue = (names: string[]) => {
     const { data } = this;
@@ -48,36 +48,24 @@ export default class StoreModel {
       : data;
   };
   // Bean: SET Function
-  public setFieldCheckRule = (name: string, checkRule: CheckRule) => {
-    const { fieldsCheckRule } = this;
-    if (fieldsCheckRule[name]) {
-      fieldsCheckRule[name].push(checkRule);
+  public setFieldVerifyRule = (id: string, verifyRule: VerifyRule) => {
+    const { fieldsVerifyRule } = this;
+    if (verifyRule) {
+      fieldsVerifyRule[id] = verifyRule;
     } else {
-      fieldsCheckRule[name] = [checkRule];
+      delete fieldsVerifyRule[id];
     }
   };
-  public cancelFieldCheckRule = (name: string, checkRule: CheckRule) => {
-    const { fieldsCheckRule } = this;
-    if (fieldsCheckRule[name]) {
-      fieldsCheckRule[name] = fieldsCheckRule[name].filter((rule: any) => rule !== checkRule);
-    }
-  };
-  public setFieldEnterRule = (name: string, enterRule: EnterRule) => {
+  public setFieldEnterRule = (id: string, enterRule: EnterRule) => {
     const { fieldsEnterRule } = this;
-    if (fieldsEnterRule[name]) {
-      fieldsEnterRule[name].push(enterRule);
+    if (enterRule) {
+      fieldsEnterRule[id] = enterRule;
     } else {
-      fieldsEnterRule[name] = [enterRule];
+      delete fieldsEnterRule[id];
     }
   };
-  public cancelFieldEnterRule = (name: string, enterRule: EnterRule) => {
-    const { fieldsEnterRule } = this;
-    if (fieldsEnterRule[name]) {
-      fieldsEnterRule[name] = fieldsEnterRule[name].filter((rule: any) => rule !== enterRule);
-    }
-  };
-  public setFieldError = (name: string, error: Error) => {
-    this.errors[name] = error;
+  public setFieldError = (id: string, error: any) => {
+    this.errors[id] = error;
   };
   public setFieldValue = (name: string, value: any) => {
     const { data } = this;
