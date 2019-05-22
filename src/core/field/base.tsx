@@ -1,26 +1,27 @@
 import * as React from 'react';
+import nanoid from 'nanoid';
 import get from 'lodash.get';
 import toAction from '../../utils/toAction';
 import toDepend from '../../utils/toDepend';
 import { DEFAULT_VERIFY_MESSAGE } from '../../constants';
 import { IFieldProps, IFieldState } from '../../typings';
-import isEqual from 'lodash.isequal';
 const { PureComponent } = React;
 
 export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
   static defaultProps = {
+    id: nanoid(),
     common: {},
     rules: {},
     action: {}
   };
+  public state: IFieldState = { isError: false };
   private Widget: React.ComponentClass;
   constructor(props: IFieldProps) {
     super(props);
-    const { widget, common, contextAPI } = this.props;
+    const { name, widget, common, contextAPI } = this.props;
     const { defaultValue } = common;
     const { getWidget, getFieldsValue, dispatch } = contextAPI;
     this.Widget = getWidget(widget);
-    this.state = { isError: false };
     toDepend.call(this);
     toAction.call(this);
     const value = name ? get(getFieldsValue([name]), name) : getFieldsValue();
@@ -30,16 +31,6 @@ export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
   }
   static getDerivedStateFromError(error: any) {
     return { hasError: true, msgError: error.message };
-  }
-  static getDerivedStateFromProps(props: IFieldProps, state: IFieldState) {
-    const { value } = state
-    const { name, contextAPI } = props;
-    const { getFieldsValue } = contextAPI;
-    const nextValue = name ? get(getFieldsValue([name]), name) : getFieldsValue();
-    if (!isEqual(value, nextValue)) {
-      return { value: nextValue };
-    }
-    return null;
   }
   componentWillMount() {
     // @ts-ignore
@@ -52,12 +43,6 @@ export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
     subscribe('setFieldsValue', onDependNames);
     subscribe('setConstant', onDependConstants);
     subscribe('setFunction', onDependFunctions);
-  }
-  componentDidMount() {
-    const { value } = this.state
-    const { name, defaultValue, contextAPI } = this.props
-    const { dispatch } = contextAPI;
-    value === undefined && dispatch('setFieldsValue', { [name]: defaultValue })
   }
   componentWillUnmount() {
     // @ts-ignore
