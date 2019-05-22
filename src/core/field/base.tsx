@@ -3,10 +3,10 @@ import get from 'lodash.get';
 import set from 'lodash.set';
 import isEqual from 'lodash.isequal';
 import { DEFAULT_CHECK_MESSAGE } from '../../constants';
-import { IFieldProps, IParams } from '../../typings';
+import { IFieldProps, IFieldState, IParams } from '../../typings';
 const { PureComponent } = React;
 
-export default class BaseField extends PureComponent<IFieldProps> {
+export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
   static defaultProps = {
     common: {},
     rules: {}
@@ -32,7 +32,17 @@ export default class BaseField extends PureComponent<IFieldProps> {
       return prev;
     }, {});
   }
-  componentDidMount() {
+  static getDerivedStateFromProps(props: IFieldProps, state: IFieldState) {
+    const { value } = state
+    const { name, contextAPI } = props;
+    const { getFieldsValue } = contextAPI;
+    const nextValue = name ? get(getFieldsValue([name]), name) : getFieldsValue();
+    if (!isEqual(value, nextValue)) {
+      return { value: nextValue };
+    }
+    return null;
+  }
+  componentWillMount() {
     const { name, rules, contextAPI } = this.props;
     const { check, enter } = rules;
     const { subscribe, dispatch } = contextAPI;
@@ -41,6 +51,12 @@ export default class BaseField extends PureComponent<IFieldProps> {
     subscribe('setFieldsValue', this.onDependNames);
     subscribe('setConstant', this.onDependConstants);
     subscribe('setFunction', this.onDependFunctions);
+  }
+  componentDidMount() {
+    const { value } = this.state
+    const { name, defaultValue, contextAPI } = this.props
+    const { dispatch } = contextAPI;
+    value === undefined && dispatch('setFieldsValue', { [name]: defaultValue })
   }
   componentWillUnmount() {
     const { name, rules, contextAPI } = this.props;

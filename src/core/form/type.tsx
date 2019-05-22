@@ -25,4 +25,5 @@ const TypeForm = memo(
   (prevProps, nextProps) =>
     get(prevProps, 'formSchema.type') === get(nextProps, 'formSchema.type')
 );
+TypeForm.displayName = 'TypeForm';
 export default TypeForm;

@@ -16,4 +16,5 @@ const BaseForm = memo((props: BaseProps) => {
     />
   ));
 });
+BaseForm.displayName = 'BaseForm';
 export default BaseForm;
