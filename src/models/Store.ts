@@ -25,11 +25,11 @@ export default class StoreModel {
     return this.errors;
   }
   // Bean: GET Function
-  public getFieldsVerifyRule = (ids: string[]) => {
+  public getFieldsVerifyRule = (ids?: string[]) => {
     const { fieldsVerifyRule } = this;
     return ids ? pick(fieldsVerifyRule, ids) : fieldsVerifyRule;
   };
-  public getFieldsEnterRule = (ids: string[]) => {
+  public getFieldsEnterRule = (ids?: string[]) => {
     const { fieldsEnterRule } = this;
     return ids ? pick(fieldsEnterRule, ids) : fieldsEnterRule;
   };
@@ -65,7 +65,11 @@ export default class StoreModel {
     }
   };
   public setFieldError = (id: string, error: any) => {
-    this.errors[id] = error;
+    if (error) {
+      this.errors[id] = error;
+    } else {
+      delete this.errors[id];
+    }
   };
   public setFieldValue = (name: string, value: any) => {
     const { data } = this;

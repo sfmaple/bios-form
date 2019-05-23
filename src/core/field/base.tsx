@@ -34,28 +34,35 @@ export default class BaseField extends PureComponent<IFieldProps, IFieldState> {
   }
   componentWillMount() {
     // @ts-ignore
-    const { onDependNames, onDependConstants, onDependFunctions } = this;
+    const { handleRerender, onDependNames, onDependConstants, onDependFunctions } = this;
     const { id, rules, contextAPI } = this.props;
     const { enter, verify } = rules;
     const { subscribe, dispatch } = contextAPI;
     id && enter && dispatch('setFieldEnterRule', { [id]: enter });
     id && verify && dispatch('setFieldVerifyRule', { [id]: verify });
+    subscribe('onRerender', handleRerender);
     subscribe('setFieldsValue', onDependNames);
     subscribe('setConstant', onDependConstants);
     subscribe('setFunction', onDependFunctions);
   }
   componentWillUnmount() {
     // @ts-ignore
-    const { onDependNames, onDependConstants, onDependFunctions } = this;
+    const { handleRerender, onDependNames, onDependConstants, onDependFunctions } = this;
     const { id, rules, contextAPI } = this.props;
     const { enter, verify } = rules;
     const { unsubscribe, dispatch } = contextAPI;
     id && enter && dispatch('setFieldEnterRule', { [id]: undefined });
     id && verify && dispatch('setFieldVerifyRule', { [id]: undefined });
+    unsubscribe('onRerender', handleRerender);
     unsubscribe('setFieldsValue', onDependNames);
     unsubscribe('setConstant', onDependConstants);
     unsubscribe('setFunction', onDependFunctions);
   }
+  handleRerender = (renderIds: string[]) => {
+    const { id } = this.props;
+    const isUpdate = renderIds.includes(id);
+    isUpdate && this.forceUpdate();
+  };
   handleExtraProps = (extra: any) => {
     // @ts-ignore
     const { plusProps } = this;

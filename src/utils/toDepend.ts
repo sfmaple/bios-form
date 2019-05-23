@@ -2,6 +2,7 @@ import get from 'lodash.get';
 import set from 'lodash.set';
 import isEqual from 'lodash.isequal';
 import { IParams } from '../typings';
+import { BIOS_NIL } from '..//constants/symbol';
 
 export default function() {
   const { name, common, contextAPI } = this.props;
@@ -18,8 +19,8 @@ export default function() {
     let isUpdate = false;
     names.forEach((name: string) => {
       const prevValue = get(prevData, name);
-      const nextValue = get(params, name);
-      const judge = !isEqual(nextValue, prevValue);
+      const nextValue = get(params, name, BIOS_NIL);
+      const judge = nextValue !== BIOS_NIL && !isEqual(nextValue, prevValue);
       if (judge) {
         set(prevData, name, nextValue);
         !isUpdate && (isUpdate = judge);

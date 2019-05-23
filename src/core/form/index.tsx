@@ -8,6 +8,7 @@ import ContextModel from '../../models/Context';
 import ActionModel from '../../models/Action';
 import toPairsFunc from '../../utils/toPairsFunc';
 import onVerifyRule from '../../utils/onVerifyRule';
+import onEnterRule from '../../utils/onEnterRule';
 import { PICK_FORM_PROPS_KEYS } from '../../constants';
 import { IProps, IParams } from '../../typings';
 const { PureComponent } = React;
@@ -36,7 +37,6 @@ export class SchemaForm extends PureComponent<IProps> {
     subscribe('setFieldVerifyRule', toPairsFunc(storeModel.setFieldVerifyRule));
     subscribe('setFieldsError', toPairsFunc(storeModel.setFieldError));
     subscribe('setFieldsValue', this.setFieldsValue);
-    subscribe('onValidate', this.onValidate);
     subscribe('onSubmit', this.onSubmit);
   }
   get contextAPI() {
@@ -59,23 +59,17 @@ export class SchemaForm extends PureComponent<IProps> {
   public setFieldsError = (params: IParams) => this.actionModel.dispatch('setFieldsError', params);
   public setFieldsValue = (params: IParams) => {
     const { setFieldValue } = this.storeModel;
-    Object.keys(params).forEach((name) => {
+    const names = Object.keys(params);
+    names.forEach((name) => {
       const value = params[name];
       setFieldValue(name, value);
     });
   };
-  public onValidate = (names: string[]) => {
-    const { formData, getFieldsVerifyRule, setFieldError } = this.storeModel;
-    const verifyRules = getFieldsVerifyRule(names);
-    const errors = names.reduce((prev, name) => {
-      const verifyRule = verifyRules[name];
-      if (verifyRule) {
-        const error = onVerifyRule(formData, verifyRule);
-        prev[name] = error;
-        setFieldError(name, error);
-      }
-      return prev;
-    }, {});
+  public onValidate = (names: string[], option?: any) => {
+    const { force = false } = option || {};
+    const { dispatch } = this.actionModel;
+    const { errors, renderIds } = onVerifyRule.call(this, names);
+    force && dispatch('onRerender', renderIds);
     return errors;
   };
   public onSubmit = () => {
