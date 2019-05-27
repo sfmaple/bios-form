@@ -2,8 +2,8 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sfmaple/bios-form/blob/master/LICENSE)
 [![Build Status](https://api.travis-ci.org/sfmaple/bios-form.svg?branch=master)](travis-ci.org/sfmaple/bios-form)
-<!-- [Coverage Status](https://coveralls.io) -->
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+<!-- [Coverage Status](https://coveralls.io) -->
 
 The bios is taken from Latin βios. The bios-form is JavaScript library for building dynamic form.
 

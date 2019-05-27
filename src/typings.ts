@@ -26,7 +26,7 @@ export interface IFieldState {
   [key: string]: any;
 }
 // model types
-export type CheckRule = any;
+export type VerifyRule = any;
 export type EnterRule = any;
 export type IStore = {
   initialData: any;
@@ -38,6 +38,9 @@ export type IContext = {
 };
 export type IAction = {
   actions: Action[];
+};
+export type CAction = {
+  [key: string]: any;
 };
 export type Action = {
   name: string;

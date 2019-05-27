@@ -7,11 +7,18 @@ import StoreModel from '../../models/Store';
 import ContextModel from '../../models/Context';
 import ActionModel from '../../models/Action';
 import toPairsFunc from '../../utils/toPairsFunc';
+import onVerifyRule from '../../utils/onVerifyRule';
+import onEnterRule from '../../utils/onEnterRule';
 import { PICK_FORM_PROPS_KEYS } from '../../constants';
 import { IProps, IParams } from '../../typings';
 const { PureComponent } = React;
 
 export class SchemaForm extends PureComponent<IProps> {
+  static defaultProps = {
+    form: {},
+    fields: []
+  };
+  public isVerify = false;
   private storeModel: StoreModel;
   private contextModel: ContextModel;
   private actionModel: ActionModel;
@@ -26,44 +33,43 @@ export class SchemaForm extends PureComponent<IProps> {
     subscribe('setFieldSchema', toPairsFunc(contextModel.setFieldSchema));
     subscribe('setConstant', toPairsFunc(contextModel.setConstant));
     subscribe('setFunction', toPairsFunc(contextModel.setFunction));
-    subscribe('setFieldCheckRule', toPairsFunc(storeModel.setFieldCheckRule));
     subscribe('setFieldEnterRule', toPairsFunc(storeModel.setFieldEnterRule));
-    subscribe('removeFieldCheckRule', toPairsFunc(storeModel.cancelFieldCheckRule));
-    subscribe('removeFieldEnterRule', toPairsFunc(storeModel.cancelFieldEnterRule));
+    subscribe('setFieldVerifyRule', toPairsFunc(storeModel.setFieldVerifyRule));
     subscribe('setFieldsError', toPairsFunc(storeModel.setFieldError));
-    subscribe('setFieldsValue', toPairsFunc(storeModel.setFieldValue));
-    subscribe('onCheck', this.onCheck);
+    subscribe('setFieldsValue', this.setFieldsValue);
     subscribe('onSubmit', this.onSubmit);
   }
   get contextAPI() {
-    const { dispatch, subscribe, unsubscribe } = this.actionModel;
-    const { getWidget, getFunction, getConstant, getFieldSchema } = this.contextModel;
     const rest = pick(this, ['getFieldsValue', 'getFieldsError']);
-    return {
-      dispatch,
-      subscribe,
-      unsubscribe,
-      getWidget,
-      getFunction,
-      getConstant,
-      getFieldSchema,
-      ...rest
-    };
+    const actionRest = pick(this.actionModel, ['dispatch', 'subscribe', 'unsubscribe']);
+    const contextRest = pick(this.contextModel, ['getWidget', 'getFunction', 'getConstant', 'getFieldSchema']);
+    return { ...rest, ...actionRest, ...contextRest };
   }
   public getFieldsError = (names: string[]) => this.storeModel.getFieldsError(names);
   public getFieldsValue = (names: string[]) => this.storeModel.getFieldsValue(names);
-  public setFieldsError = (params: IParams) => {
-    const { actionModel } = this;
-    const { dispatch } = actionModel;
-    dispatch('setFieldsError', params);
-  };
+  public setFieldsError = (params: IParams) => this.actionModel.dispatch('setFieldsError', params);
   public setFieldsValue = (params: IParams) => {
-    const { actionModel } = this;
-    const { dispatch } = actionModel;
-    dispatch('setFieldsValue', params);
+    const { setFieldValue } = this.storeModel;
+    const names = Object.keys(params);
+    const nextNames: any[] = onEnterRule.call(this, names, params);
+    nextNames.forEach((name: string) => {
+      const value = params[name];
+      setFieldValue(name, value);
+    });
   };
-  public onCheck = () => {};
-  public onSubmit = () => {};
+  public onValidate = (names: string[], option?: any) => {
+    const { force = false } = option || {};
+    const { dispatch } = this.actionModel;
+    const { errors, renderIds } = onVerifyRule.call(this, names);
+    force && dispatch('onRerender', renderIds);
+    return errors;
+  };
+  public onSubmit = () => {
+    const { form } = this.props;
+    if (form.verify) {
+      this.isVerify = true;
+    }
+  };
   render() {
     const { contextAPI, props } = this;
     const { className, style, form, fields, children, ...other } = props;
@@ -72,7 +78,7 @@ export class SchemaForm extends PureComponent<IProps> {
       <div className={className} style={style}>
         <form {...rest}>
           <Provider value={contextAPI}>
-            <TypeForm formSchema={form || {}} fieldsSchema={fields || []} />
+            <TypeForm formSchema={form} fieldsSchema={fields} />
           </Provider>
           {children}
         </form>

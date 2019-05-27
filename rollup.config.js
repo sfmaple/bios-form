@@ -17,7 +17,7 @@ rimraf('./dist', function (error) {
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development';
 const extensions = [".ts", ".tsx", ".js", ".jsx"]
 const external = [
-  'react', 'axios', 'mitt',
+  'react', 'axios', 'mitt', 'nanoid',
   'lodash.get', 'lodash.set', 'lodash.pick',
   'lodash.omit', 'lodash.clonedeep'
 ]
