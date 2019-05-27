@@ -10,8 +10,8 @@
     "watch": "rollup -cw",
     "lint": "tslint --project tsconfig.json",
     "test": "jest",
-    "postversion": "git push --follow-tags",
-    "release": "np"
+    "postversion": "git push",
+    "release": "git push --follow-tags"
   },
   "dependencies": {
     "axios": "^0.18.0",
