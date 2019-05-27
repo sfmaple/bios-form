@@ -40,19 +40,10 @@ export class SchemaForm extends PureComponent<IProps> {
     subscribe('onSubmit', this.onSubmit);
   }
   get contextAPI() {
-    const { dispatch, subscribe, unsubscribe } = this.actionModel;
-    const { getWidget, getFunction, getConstant, getFieldSchema } = this.contextModel;
     const rest = pick(this, ['getFieldsValue', 'getFieldsError']);
-    return {
-      dispatch,
-      subscribe,
-      unsubscribe,
-      getWidget,
-      getFunction,
-      getConstant,
-      getFieldSchema,
-      ...rest
-    };
+    const actionRest = pick(this.actionModel, ['dispatch', 'subscribe', 'unsubscribe']);
+    const contextRest = pick(this.contextModel, ['getWidget', 'getFunction', 'getConstant', 'getFieldSchema']);
+    return { ...rest, ...actionRest, ...contextRest };
   }
   public getFieldsError = (names: string[]) => this.storeModel.getFieldsError(names);
   public getFieldsValue = (names: string[]) => this.storeModel.getFieldsValue(names);
@@ -60,7 +51,8 @@ export class SchemaForm extends PureComponent<IProps> {
   public setFieldsValue = (params: IParams) => {
     const { setFieldValue } = this.storeModel;
     const names = Object.keys(params);
-    names.forEach((name) => {
+    const nextNames: any[] = onEnterRule.call(this, names, params);
+    nextNames.forEach((name: string) => {
       const value = params[name];
       setFieldValue(name, value);
     });
