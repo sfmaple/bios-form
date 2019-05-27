@@ -15,8 +15,14 @@ const { PureComponent } = React;
 
 export class SchemaForm extends PureComponent<IProps> {
   static defaultProps = {
+    initialData: {},
     form: {},
-    fields: []
+    fields: [],
+    widgets: {},
+    constants: {},
+    functions: {},
+    fetches: {},
+    actions: []
   };
   public isVerify = false;
   private storeModel: StoreModel;
@@ -24,9 +30,9 @@ export class SchemaForm extends PureComponent<IProps> {
   private actionModel: ActionModel;
   constructor(props: IProps) {
     super(props);
-    const { initialData, widgets, constants, functions, actions } = props;
+    const { initialData, widgets, constants, functions, fetches, actions } = props;
     this.storeModel = new StoreModel({ initialData });
-    this.contextModel = new ContextModel({ widgets, constants, functions });
+    this.contextModel = new ContextModel({ widgets, constants, functions, fetches });
     this.actionModel = new ActionModel({ actions });
     const { storeModel, contextModel, actionModel } = this;
     const { subscribe } = actionModel;

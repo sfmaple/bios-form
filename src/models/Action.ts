@@ -7,10 +7,9 @@ export default class ActionModel {
   constructor(params: IAction) {
     this.emitter = new Mitt();
     const { actions } = params;
-    actions &&
-      actions.forEach(({ name, handler }) => {
-        this.subscribe(name, handler);
-      });
+    actions.forEach(({ name, handler }) => {
+      this.subscribe(name, handler);
+    });
   }
   public dispatch = (name: string, params?: any) => {
     this.emitter.emit(name, params);

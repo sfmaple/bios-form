@@ -1,5 +1,7 @@
-import { IContext } from '../typings';
 import * as _widgets from '../widgets';
+import fetch from '../lib/fetch';
+import toOption from '../utils/toOption';
+import { IContext, FetchOption } from '../typings';
 
 export default class ContextModel {
   private widgets = {};
@@ -8,11 +10,20 @@ export default class ContextModel {
   private fieldSchemas = {};
 
   constructor(context: IContext) {
-    const { widgets, constants, functions } = context;
+    const { widgets, constants, functions, fetches } = context;
     this.widgets = Object.assign({}, _widgets, widgets);
     this.constants = constants || {};
     this.functions = functions || {};
+    this.handleFetchInit(fetches);
   }
+  private handleFetchInit = (fetchOptions: { [key: string]: FetchOption }) => {
+    const fetchFuncs = Object.keys(fetchOptions).reduce((prev, key) => {
+      const option = toOption(fetchOptions[key]);
+      prev[key] = () => fetch(option);
+      return prev;
+    }, []);
+    Object.assign(this.functions, fetchFuncs);
+  };
   // Bean: GET Function
   public getWidget = (key: string) => this.widgets[key] || null;
   public getConstant = (key: string) => this.constants[key] || null;

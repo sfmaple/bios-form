@@ -31,10 +31,12 @@ export type EnterRule = any;
 export type IStore = {
   initialData: any;
 };
+export type FetchOption = any;
 export type IContext = {
   widgets: { [key: string]: Component };
   constants: { [key: string]: any };
   functions: { [key: string]: Function };
+  fetches: { [key: string]: FetchOption };
 };
 export type IAction = {
   actions: Action[];
