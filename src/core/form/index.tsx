@@ -50,8 +50,7 @@ export class SchemaForm extends PureComponent<IProps> {
   public setFieldsError = (params: IParams) => this.actionModel.dispatch('setFieldsError', params);
   public setFieldsValue = (params: IParams) => {
     const { setFieldValue } = this.storeModel;
-    const names = Object.keys(params);
-    const nextNames: any[] = onEnterRule.call(this, names, params);
+    const nextNames: any[] = onEnterRule.call(this, params);
     nextNames.forEach((name: string) => {
       const value = params[name];
       setFieldValue(name, value);
