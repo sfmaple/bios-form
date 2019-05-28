@@ -53,7 +53,9 @@ export class SchemaForm extends PureComponent<IProps> {
   }
   public getFieldsError = (names: string[]) => this.storeModel.getFieldsError(names);
   public getFieldsValue = (names: string[]) => this.storeModel.getFieldsValue(names);
-  public setFieldsError = (params: IParams) => this.actionModel.dispatch('setFieldsError', params);
+  public setFieldsError = (params: IParams) => {
+    this.actionModel.dispatch('setFieldsError', params);
+  };
   public setFieldsValue = (params: IParams) => {
     const { setFieldValue } = this.storeModel;
     const nextNames: any[] = onEnterRule.call(this, params);
@@ -64,16 +66,24 @@ export class SchemaForm extends PureComponent<IProps> {
   };
   public onValidate = (names: string[], option?: any) => {
     const { force = false } = option || {};
+    const { formErrors } = this.storeModel;
     const { dispatch } = this.actionModel;
-    const { errors, renderIds } = onVerifyRule.call(this, names);
+    const { errors, errorIds } = onVerifyRule.call(this, names);
+    const errorSet = new Set(Object.keys(formErrors).concat(errorIds));
+    const renderIds: string[] = [];
+    errorSet.forEach((errorId) => {
+      renderIds.push(errorId);
+    });
     force && dispatch('onRerender', renderIds);
     return errors;
   };
   public onSubmit = () => {
     const { form } = this.props;
+    const { formData } = this.storeModel;
     if (form.verify) {
       this.isVerify = true;
     }
+    return formData;
   };
   render() {
     const { contextAPI, props } = this;

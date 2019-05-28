@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "antd": "^3.12.4",
+    "axios": "^0.18.0",
     "bios-form": "../",
     "lodash.omit": "^4.5.0",
     "react": "^16.8.5",

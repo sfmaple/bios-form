@@ -14,7 +14,6 @@
     "release": "git push --follow-tags"
   },
   "dependencies": {
-    "axios": "^0.18.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
     "lodash.isequal": "^4.5.0",
@@ -34,6 +33,7 @@
     "@types/lodash.set": "^4.3.6",
     "@types/nanoid": "^2.0.0",
     "@types/react": "^16.8.8",
+    "axios": "^0.18.0",
     "jest": "^24.8.0",
     "prettier": "^1.16.4",
     "react": "^16.8.5",
@@ -53,6 +53,7 @@
     "typescript": "^3.4.5"
   },
   "peerDependencies": {
-    "react": "^16.8.5"
+    "axios": "^0.18.0",
+    "react": "^16.8.0"
   }
 }
