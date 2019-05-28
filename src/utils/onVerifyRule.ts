@@ -43,7 +43,7 @@ const execute = (value: any, rule: VerifyRule, getFunction: Function) => {
   });
   return msgError;
 };
-export default function(names: string[]): any {
+export default function(names?: string[]): any {
   const { formData, getFieldsVerifyRule, setFieldError } = this.storeModel;
   const { getFunction } = this.contextModel;
   const errorIds: string[] = [];
@@ -54,7 +54,7 @@ export default function(names: string[]): any {
     rules.some((rule: VerifyRule) => {
       const { name } = rule;
       const value = get(formData, name);
-      const msgError = names.includes(name) && execute(value, rule, getFunction);
+      const msgError = (names == null || names.includes(name)) && execute(value, rule, getFunction);
       if (msgError) {
         !message && (message = msgError);
         !prev[name] && (prev[name] = []);

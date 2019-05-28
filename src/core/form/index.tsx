@@ -62,7 +62,7 @@ export class SchemaForm extends PureComponent<IProps> {
       setFieldValue(name, value);
     });
   };
-  public onValidate = (names: string[], option?: any) => {
+  public onValidate = (names?: string[], option?: any) => {
     const { force = false } = option || {};
     const { formErrors } = this.storeModel;
     const { dispatch } = this.actionModel;
@@ -77,10 +77,16 @@ export class SchemaForm extends PureComponent<IProps> {
   };
   public onSubmit = () => {
     const { form } = this.props;
-    const { formData } = this.storeModel;
+    const { formData, formErrors } = this.storeModel;
     if (form.verify) {
       this.isVerify = true;
-      
+      const errors = this.onValidate(undefined, { force: true });
+      Object.keys(formErrors).forEach((id) => {
+        errors[id] || (errors[id] = null);
+      });
+      this.setFieldsError(errors);
+      console.error(errors);
+      throw errors;
     }
     return formData;
   };

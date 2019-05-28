@@ -47,7 +47,7 @@ class App extends React.Component {
   form: any;
   componentDidMount() {
     this.form.setFieldsValue({ test_2: { a: 1 } });
-    configure.form.type = 'Base'
+    configure.form.type = 'Base';
     this.forceUpdate();
   }
   onSubmit = () => {
