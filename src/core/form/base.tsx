@@ -1,20 +1,20 @@
 import * as React from 'react';
 import Field from '../field';
-import Context from '../context';
+import { Consumer } from '../context';
 import { BaseProps, IFieldSchema } from '../../typings';
-const { memo, useContext } = React;
+const { memo } = React;
 
 const BaseForm = memo((props: BaseProps) => {
   const { formSchema, fieldsSchema } = props;
-  const contextAPI = useContext(Context);
-  return fieldsSchema.map(({ id, ...rest }: IFieldSchema, i: number) => (
-    <Field
-      key={id || i}
-      {...rest}
-      formSchema={formSchema}
-      contextAPI={contextAPI}
-    />
-  ));
+  return (
+    <Consumer>
+      {(contextAPI) =>
+        fieldsSchema.map(({ id, ...rest }: IFieldSchema, i: number) => (
+          <Field key={id || i} {...rest} formSchema={formSchema} contextAPI={contextAPI} />
+        ))
+      }
+    </Consumer>
+  );
 });
 BaseForm.displayName = 'BaseForm';
 export default BaseForm;

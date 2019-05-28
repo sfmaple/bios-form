@@ -26,7 +26,7 @@ const fields: any[] = [
     rules: { check: { required: true } }
   }
 ];
-const configure = {
+const configure: any = {
   form: { index: 'common', verify: true },
   fields: fields,
   widgets: { Input: FInput },
@@ -47,6 +47,8 @@ class App extends React.Component {
   form: any;
   componentDidMount() {
     this.form.setFieldsValue({ test_2: { a: 1 } });
+    configure.form.type = 'Base'
+    this.forceUpdate();
   }
   onSubmit = () => {
     const formData = this.form.onSubmit();

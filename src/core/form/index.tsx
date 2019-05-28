@@ -53,9 +53,7 @@ export class SchemaForm extends PureComponent<IProps> {
   }
   public getFieldsError = (names: string[]) => this.storeModel.getFieldsError(names);
   public getFieldsValue = (names: string[]) => this.storeModel.getFieldsValue(names);
-  public setFieldsError = (params: IParams) => {
-    this.actionModel.dispatch('setFieldsError', params);
-  };
+  public setFieldsError = (params: IParams) => this.actionModel.dispatch('setFieldsError', params);
   public setFieldsValue = (params: IParams) => {
     const { setFieldValue } = this.storeModel;
     const nextNames: any[] = onEnterRule.call(this, params);
@@ -82,6 +80,7 @@ export class SchemaForm extends PureComponent<IProps> {
     const { formData } = this.storeModel;
     if (form.verify) {
       this.isVerify = true;
+      
     }
     return formData;
   };
