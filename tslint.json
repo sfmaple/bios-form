@@ -1,5 +1,5 @@
 {
-  "extends": ["tslint-config-airbnb", "tslint-config-prettier", "tslint-react-hooks"],
+  "extends": ["tslint-config-airbnb", "tslint-config-prettier"],
   "rules": {
     "align": [true, "parameters", "statements", "members", "elements"],
     "import-name": false,
@@ -10,7 +10,6 @@
     "function-name": false,
     "no-increment-decrement": false,
     "no-this-assignment": false,
-    "no-boolean-literal-compare": false,
-    "react-hooks-nesting": "error"
+    "no-boolean-literal-compare": false
   }
 }
