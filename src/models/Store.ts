@@ -14,7 +14,7 @@ export default class StoreModel {
   private fieldsEnterRule = {};
   constructor(store: IStore) {
     const { initialData } = store;
-    this.data = clone(initialData || {});
+    this.data = clone(initialData);
     // this.formRules = formRules || {};
   }
   // GET Method Function

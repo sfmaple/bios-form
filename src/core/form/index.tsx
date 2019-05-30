@@ -15,8 +15,14 @@ const { PureComponent } = React;
 
 export class SchemaForm extends PureComponent<IProps> {
   static defaultProps = {
+    initialData: {},
     form: {},
-    fields: []
+    fields: [],
+    widgets: {},
+    constants: {},
+    functions: {},
+    fetches: {},
+    actions: []
   };
   public isVerify = false;
   private storeModel: StoreModel;
@@ -24,9 +30,9 @@ export class SchemaForm extends PureComponent<IProps> {
   private actionModel: ActionModel;
   constructor(props: IProps) {
     super(props);
-    const { initialData, widgets, constants, functions, actions } = props;
+    const { initialData, widgets, constants, functions, fetches, actions } = props;
     this.storeModel = new StoreModel({ initialData });
-    this.contextModel = new ContextModel({ widgets, constants, functions });
+    this.contextModel = new ContextModel({ widgets, constants, functions, fetches });
     this.actionModel = new ActionModel({ actions });
     const { storeModel, contextModel, actionModel } = this;
     const { subscribe } = actionModel;
@@ -50,25 +56,39 @@ export class SchemaForm extends PureComponent<IProps> {
   public setFieldsError = (params: IParams) => this.actionModel.dispatch('setFieldsError', params);
   public setFieldsValue = (params: IParams) => {
     const { setFieldValue } = this.storeModel;
-    const names = Object.keys(params);
-    const nextNames: any[] = onEnterRule.call(this, names, params);
+    const nextNames: any[] = onEnterRule.call(this, params);
     nextNames.forEach((name: string) => {
       const value = params[name];
       setFieldValue(name, value);
     });
   };
-  public onValidate = (names: string[], option?: any) => {
+  public onValidate = (names?: string[], option?: any) => {
     const { force = false } = option || {};
+    const { formErrors } = this.storeModel;
     const { dispatch } = this.actionModel;
-    const { errors, renderIds } = onVerifyRule.call(this, names);
+    const { errors, errorIds } = onVerifyRule.call(this, names);
+    const errorSet = new Set(Object.keys(formErrors).concat(errorIds));
+    const renderIds: string[] = [];
+    errorSet.forEach((errorId) => {
+      renderIds.push(errorId);
+    });
     force && dispatch('onRerender', renderIds);
     return errors;
   };
   public onSubmit = () => {
     const { form } = this.props;
+    const { formData, formErrors } = this.storeModel;
     if (form.verify) {
       this.isVerify = true;
+      const errors = this.onValidate(undefined, { force: true });
+      Object.keys(formErrors).forEach((id) => {
+        errors[id] || (errors[id] = null);
+      });
+      this.setFieldsError(errors);
+      console.error(errors);
+      throw errors;
     }
+    return formData;
   };
   render() {
     const { contextAPI, props } = this;

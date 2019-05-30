@@ -1,10 +1,9 @@
-import omit from 'lodash.omit';
 import { EnterRule, IParams } from '../typings';
 import { ENTER_RULE_KEYS } from '../constants';
 
 const execute = (value: any, rule: EnterRule, getFunction: Function) => {
   let isError = false;
-  const { name } = rule;
+  // const { name } = rule;
   ENTER_RULE_KEYS.some((key) => {
     const ruleValue = rule[key];
     if (ruleValue == null) return false;
@@ -43,9 +42,10 @@ const execute = (value: any, rule: EnterRule, getFunction: Function) => {
   return !!isError;
 };
 
-export default function(names: string[], params: IParams) {
+export default function(params: IParams) {
   const { getFieldsEnterRule } = this.storeModel;
   const { getFunction } = this.contextModel;
+  const names = Object.keys(params);
   const enterRules = getFieldsEnterRule();
   const omitNames: string[] = Object.keys(enterRules).reduce((prev: string[], id: string) => {
     const rule = enterRules[id];
@@ -55,5 +55,5 @@ export default function(names: string[], params: IParams) {
     isError && prev.push(name);
     return prev;
   }, []);
-  return omit(names, omitNames);
+  return names.filter((name) => !omitNames.includes(name));
 }

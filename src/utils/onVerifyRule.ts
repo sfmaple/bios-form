@@ -43,18 +43,18 @@ const execute = (value: any, rule: VerifyRule, getFunction: Function) => {
   });
   return msgError;
 };
-export default function(names: string[]): any {
+export default function(names?: string[]): any {
   const { formData, getFieldsVerifyRule, setFieldError } = this.storeModel;
   const { getFunction } = this.contextModel;
-  const renderIds: string[] = [];
+  const errorIds: string[] = [];
   const verifyRules = getFieldsVerifyRule();
   const errors = Object.keys(verifyRules).reduce((prev, id: string) => {
     let message: any = null;
     const rules = verifyRules[id];
-    const isUpdate = rules.some((rule: VerifyRule) => {
+    rules.some((rule: VerifyRule) => {
       const { name } = rule;
       const value = get(formData, name);
-      const msgError = names.includes(name) && execute(value, rule, getFunction);
+      const msgError = (names == null || names.includes(name)) && execute(value, rule, getFunction);
       if (msgError) {
         !message && (message = msgError);
         !prev[name] && (prev[name] = []);
@@ -63,9 +63,9 @@ export default function(names: string[]): any {
       return !!msgError;
     });
     setFieldError(id, message);
-    isUpdate && renderIds.push(id);
+    errorIds.push(id);
     return prev;
   }, {});
 
-  return { errors, renderIds };
+  return { errors, errorIds };
 }
