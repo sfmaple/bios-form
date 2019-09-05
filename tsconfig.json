@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES5",
     "module": "commonjs",
-    "lib": ["ES2018", "dom"],
+    "lib": ["es2018", "dom"],
     "sourceMap": false,
     "allowJs": true,
     "jsx": "react",
@@ -16,7 +16,7 @@
     "noImplicitThis": false,
     /* Module Resolution Options */
     "moduleResolution": "node",
-    // "typeRoots": ["node_modules/@types"],
+    "typeRoots": ["node_modules/@types"],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     /* Experimental Options */
