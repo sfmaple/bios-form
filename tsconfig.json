@@ -9,8 +9,8 @@
     "outDir": "./dist",
     "rootDir": "./",
     "strict": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitAny": false,
     "noImplicitThis": false,
@@ -25,7 +25,9 @@
     "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */
   },
   "include": [
-    "src/**/*",
+    // "src/**/*",
+    "src_v2_new/**/*",
+    "typings/**/*",
     "__tests__/**/*"
   ],
   "exclude": [
