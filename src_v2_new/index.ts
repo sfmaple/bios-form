@@ -1,5 +1,5 @@
-import { BiosForm, Form, FormItem } from './render'
+import BiosForm from './Bios';
+import Form from './Form';
+import FormItem from './Item';
 
-export {
-  BiosForm, Form, FormItem
-}
+export { BiosForm, Form, FormItem };

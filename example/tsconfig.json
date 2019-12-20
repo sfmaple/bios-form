@@ -12,14 +12,14 @@
     "rootDir": "./",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
+    // "noImplicitReturns": true,
     "esModuleInterop": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "importHelpers": true,
+    // "noImplicitThis": true,
+    // "noImplicitAny": true,
+    // "importHelpers": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true
+    // "noUnusedLocals": true
   },
   "exclude": [
     "node_modules",
